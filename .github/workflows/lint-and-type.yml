@@ -3,8 +3,16 @@ name: Lint and Type
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
   pull_request:
     types: [opened, synchronize]
+    paths-ignore:
+      - '**.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:

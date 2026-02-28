@@ -3,8 +3,18 @@ name: Test Multiple Builds
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   pull_request:
     types: [opened, synchronize]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test_matrix:
@@ -12,24 +22,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: [cjs, umd] # [cjs, esm, umd, system]
+        build: [cjs, umd]
         env: [development, production]
-        devtools-skip:
-          - CI-MATRIX-NOSKIP
-        include:
-          - devtools-skip: CI-MATRIX-[2345]
-            build: umd
-          - devtools-skip: CI-MATRIX-[1345]
-            build: umd
-          - devtools-skip: CI-MATRIX-[1245]
-            build: umd
-          - devtools-skip: CI-MATRIX-[1235]
-            build: umd
-          - devtools-skip: CI-MATRIX-[1234]
-            build: umd
-        exclude:
-          - devtools-skip: CI-MATRIX-NOSKIP
-            build: umd
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

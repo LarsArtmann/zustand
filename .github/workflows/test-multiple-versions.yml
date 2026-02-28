@@ -3,8 +3,18 @@ name: Test Multiple Versions
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   pull_request:
     types: [opened, synchronize]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -29,28 +39,10 @@ jobs:
       matrix:
         react:
           - 16.8.0
-          - 17.0.0
-          - 18.0.0
-          - 18.1.0
           - 18.2.0
           - 18.3.0-canary-aef7ce554-20230503
-          - 0.0.0-experimental-aef7ce554-20230503
         devtools-skip:
           - CI-MATRIX-NOSKIP
-        include:
-          - devtools-skip: CI-MATRIX-[2345]
-            react: 16.8.0
-          - devtools-skip: CI-MATRIX-[1345]
-            react: 16.8.0
-          - devtools-skip: CI-MATRIX-[1245]
-            react: 16.8.0
-          - devtools-skip: CI-MATRIX-[1235]
-            react: 16.8.0
-          - devtools-skip: CI-MATRIX-[1234]
-            react: 16.8.0
-        exclude:
-          - devtools-skip: CI-MATRIX-NOSKIP
-            react: 16.8.0
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
